@@ -75,7 +75,7 @@
     "postcss-import": "^16.1.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vite": "^7",
+    "vite": "^8",
     "vite-tsconfig-paths": "^6",
     "wrangler": "^4"
   },
