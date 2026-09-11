@@ -27,12 +27,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
           cache-dependency-path: packages/chat/package-lock.json
+
+      - name: Configure Socket Firewall
+        uses: workos/setup-socket-firewall@ca93dd8aa351f54f4729fe3377a9be23c631c25d
+        with:
+          token: ${{ secrets.PUBLIC_SOCKET_FIREWALL_TOKEN }}
+          allow-external-fork-fallback: true
 
       - name: Install dependencies
         run: npm ci

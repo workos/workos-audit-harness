@@ -23,16 +23,42 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - uses: actions/setup-node@v7
         with:
           node-version: '20'
 
+      - name: Configure Socket Firewall
+        uses: workos/setup-socket-firewall@ca93dd8aa351f54f4729fe3377a9be23c631c25d
+        with:
+          token: ${{ secrets.PUBLIC_SOCKET_FIREWALL_TOKEN }}
+          configure-bun: true
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install workspace dependencies
         run: npm install --no-audit --no-fund
+
+      - name: Install Bun compile runtimes
+        run: |
+          set -euo pipefail
+          BUN_VERSION="$(bun --version)"
+          BUN_COMPILE_EXECUTABLES_DIR="${RUNNER_TEMP}/bun-compile-runtimes"
+          mkdir -p "$BUN_COMPILE_EXECUTABLES_DIR"
+          for package in \
+            bun-darwin-aarch64 \
+            bun-darwin-x64 \
+            bun-linux-aarch64 \
+            bun-windows-x64; do
+            tgz="$(npm pack --pack-destination "$RUNNER_TEMP" "@oven/${package}@${BUN_VERSION}")"
+            mkdir -p "$BUN_COMPILE_EXECUTABLES_DIR/$package"
+            tar -xzf "$RUNNER_TEMP/$tgz" -C "$BUN_COMPILE_EXECUTABLES_DIR/$package" --strip-components=1
+          done
+          echo "BUN_COMPILE_EXECUTABLES_DIR=$BUN_COMPILE_EXECUTABLES_DIR" >> "$GITHUB_ENV"
+
+      - name: Restore public package registry
+        uses: workos/setup-socket-firewall/teardown@ca93dd8aa351f54f4729fe3377a9be23c631c25d
 
       - name: Verify package version matches tag
         run: |

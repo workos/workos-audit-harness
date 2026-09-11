@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,13 +9,14 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = path.resolve(HERE, '..');
 const ENTRY = path.join(PACKAGE_DIR, 'src/cli/index.mjs');
 const BUILD_DIR = path.join(PACKAGE_DIR, 'build');
+const ROOT = path.resolve(PACKAGE_DIR, '../..');
 
 const TARGETS = [
-  { slug: 'darwin-arm64', bunTarget: 'bun-darwin-arm64', suffix: '' },
-  { slug: 'darwin-x64', bunTarget: 'bun-darwin-x64', suffix: '' },
-  { slug: 'linux-x64', bunTarget: 'bun-linux-x64', suffix: '' },
-  { slug: 'linux-arm64', bunTarget: 'bun-linux-arm64', suffix: '' },
-  { slug: 'windows-x64', bunTarget: 'bun-windows-x64', suffix: '.exe' },
+  { slug: 'darwin-arm64', bunTarget: 'bun-darwin-arm64', suffix: '', compilePackage: 'bun-darwin-aarch64' },
+  { slug: 'darwin-x64', bunTarget: 'bun-darwin-x64', suffix: '', compilePackage: 'bun-darwin-x64' },
+  { slug: 'linux-x64', bunTarget: 'bun-linux-x64', suffix: '', compilePackage: 'bun-linux-x64' },
+  { slug: 'linux-arm64', bunTarget: 'bun-linux-arm64', suffix: '', compilePackage: 'bun-linux-aarch64' },
+  { slug: 'windows-x64', bunTarget: 'bun-windows-x64', suffix: '.exe', compilePackage: 'bun-windows-x64' },
 ];
 
 function sha256(file) {
@@ -32,7 +33,18 @@ function bunVersion() {
   }
 }
 
-function buildTarget({ slug, bunTarget, suffix }) {
+function compileExecutablePath({ compilePackage, suffix }) {
+  if (!compilePackage) return undefined;
+  const executable = suffix === '.exe' ? 'bun.exe' : 'bun';
+  const candidates = [];
+  if (process.env.BUN_COMPILE_EXECUTABLES_DIR) {
+    candidates.push(path.join(process.env.BUN_COMPILE_EXECUTABLES_DIR, compilePackage, 'bin', executable));
+  }
+  candidates.push(path.join(ROOT, 'node_modules', '@oven', compilePackage, 'bin', executable));
+  return candidates.find((candidate) => existsSync(candidate));
+}
+
+function buildTarget({ slug, bunTarget, suffix, compilePackage }) {
   const outfile = path.join(BUILD_DIR, `workos-audit-harness-${slug}${suffix}`);
   const args = [
     'build', ENTRY,
@@ -41,6 +53,8 @@ function buildTarget({ slug, bunTarget, suffix }) {
     `--outfile=${outfile}`,
     '--minify',
   ];
+  const executablePath = compileExecutablePath({ compilePackage, suffix });
+  if (executablePath) args.push(`--compile-executable-path=${executablePath}`);
   const result = spawnSync('bun', args, { stdio: ['ignore', 'inherit', 'inherit'] });
   if (result.status !== 0) {
     throw new Error(`bun build failed for ${slug} (exit code ${result.status})`);

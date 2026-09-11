@@ -7,15 +7,25 @@ on:
       - ".github/workflows/proxy-ci.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           # wrangler v4 requires Node >= 22
           node-version: 22
+      - name: Configure Socket Firewall
+        uses: workos/setup-socket-firewall@ca93dd8aa351f54f4729fe3377a9be23c631c25d
+        with:
+          token: ${{ secrets.PUBLIC_SOCKET_FIREWALL_TOKEN }}
+          allow-external-fork-fallback: true
       - run: npm install
         env:
           WORKOS_AUDIT_HARNESS_SKIP_DOWNLOAD: "1"
