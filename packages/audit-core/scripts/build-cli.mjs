@@ -34,14 +34,17 @@ function bunVersion() {
 }
 
 function compileExecutablePath({ compilePackage, suffix }) {
-  if (!compilePackage) return undefined;
   const executable = suffix === '.exe' ? 'bun.exe' : 'bun';
   const candidates = [];
   if (process.env.BUN_COMPILE_EXECUTABLES_DIR) {
     candidates.push(path.join(process.env.BUN_COMPILE_EXECUTABLES_DIR, compilePackage, 'bin', executable));
   }
   candidates.push(path.join(ROOT, 'node_modules', '@oven', compilePackage, 'bin', executable));
-  return candidates.find((candidate) => existsSync(candidate));
+  const executablePath = candidates.find((candidate) => existsSync(candidate));
+  if (process.env.BUN_COMPILE_EXECUTABLES_DIR && !executablePath) {
+    throw new Error(`Missing local Bun compile runtime for ${compilePackage}; refusing automatic download.`);
+  }
+  return executablePath;
 }
 
 function buildTarget({ slug, bunTarget, suffix, compilePackage }) {

@@ -39,22 +39,26 @@ jobs:
       - name: Install workspace dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Test compile runtime requirement
+        run: node --test packages/audit-core/test/build-cli.test.mjs
+
       - name: Install Bun compile runtimes
         run: |
           set -euo pipefail
           BUN_VERSION="$(bun --version)"
-          BUN_COMPILE_EXECUTABLES_DIR="${RUNNER_TEMP}/bun-compile-runtimes"
-          mkdir -p "$BUN_COMPILE_EXECUTABLES_DIR"
+          compile_executables_dir="${RUNNER_TEMP}/bun-compile-runtimes"
+          mkdir -p "$compile_executables_dir"
           for package in \
             bun-darwin-aarch64 \
             bun-darwin-x64 \
+            bun-linux-x64 \
             bun-linux-aarch64 \
             bun-windows-x64; do
             tgz="$(npm pack --pack-destination "$RUNNER_TEMP" "@oven/${package}@${BUN_VERSION}")"
-            mkdir -p "$BUN_COMPILE_EXECUTABLES_DIR/$package"
-            tar -xzf "$RUNNER_TEMP/$tgz" -C "$BUN_COMPILE_EXECUTABLES_DIR/$package" --strip-components=1
+            mkdir -p "$compile_executables_dir/$package"
+            tar -xzf "$RUNNER_TEMP/$tgz" -C "$compile_executables_dir/$package" --strip-components=1
           done
-          echo "BUN_COMPILE_EXECUTABLES_DIR=$BUN_COMPILE_EXECUTABLES_DIR" >> "$GITHUB_ENV"
+          echo "BUN_COMPILE_EXECUTABLES_DIR=$compile_executables_dir" >> "$GITHUB_ENV"
 
       - name: Build all CLI targets
         run: npm run build:cli -w @workos-inc/audit-core
