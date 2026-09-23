@@ -26,7 +26,7 @@ jobs:
           node-version: '20'
 
       - name: Configure Socket Firewall
-        uses: workos/setup-socket-firewall@ca93dd8aa351f54f4729fe3377a9be23c631c25d
+        uses: workos/setup-socket-firewall@195977cfa38ab4d70363af5403a106dbc54a61eb
         with:
           token: ${{ secrets.PUBLIC_SOCKET_FIREWALL_TOKEN }}
           allow-external-fork-fallback: true
