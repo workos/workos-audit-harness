@@ -60,7 +60,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.13.5",
+    "@cloudflare/vite-plugin": "^1.62.1",
     "@cloudflare/workers-types": "^5",
     "@react-router/dev": "^8.3.0",
     "@tailwindcss/vite": "^4",
@@ -83,6 +83,6 @@
     "@workos-inc/authkit-react-router": {
       "react-router": "$react-router"
     },
-    "undici": "^7.29.0"
+    "undici": "^7.30.0"
   }
 }
