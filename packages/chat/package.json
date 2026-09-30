@@ -74,7 +74,7 @@
     "postcss-hover-media-feature": "^1.0.2",
     "postcss-import": "^16.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^7",
     "vite": "^7",
     "vite-tsconfig-paths": "^6",
     "wrangler": "^4"
