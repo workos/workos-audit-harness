@@ -9,7 +9,7 @@
     "bundle": "node ../../scripts/bundle-plugins.mjs pi-extension"
   },
   "dependencies": {
-    "@workos-inc/node": "^8.10.0",
+    "@workos-inc/node": "^10.13.0",
     "typebox": "^1.1.38",
     "zod": "^4.4.3"
   },
