@@ -48,6 +48,9 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: Test assistant rendering
+        run: npm test
+
       # --local applies the migrations to a throwaway miniflare sqlite, so this
       # only asserts the SQL in migrations/ still applies cleanly.
       - name: Validate migrations
