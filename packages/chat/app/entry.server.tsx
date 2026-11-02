@@ -31,6 +31,7 @@ export default async function handleRequest(
   }
 
   responseHeaders.set("Content-Type", "text/html");
+  responseHeaders.set("Content-Security-Policy", "img-src 'self' data:");
   return new Response(body, {
     headers: responseHeaders,
     status: responseStatusCode,

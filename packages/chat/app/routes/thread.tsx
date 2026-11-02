@@ -1,8 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { authkitLoader, withAuth } from "@workos-inc/authkit-react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
@@ -38,6 +36,7 @@ import {
 } from "../lib/config.server";
 import type { ThreadSummary } from "../lib/chat-threads.server";
 import { deleteThread, isValidThreadId, loadThreadPage } from "../lib/chat-threads.server";
+import { AssistantMarkdown } from "../components/assistant-markdown";
 
 export async function loader(args: LoaderFunctionArgs) {
   const { env } = args.context.get(cloudflareContext);
@@ -69,6 +68,7 @@ export async function loader(args: LoaderFunctionArgs) {
         defaultOrganizationId,
         environmentLabel: tenant.environmentLabel,
         publicHostname: tenant.publicHostname,
+        origin: new URL(args.request.url).origin,
         modelId: tenant.modelId,
         threadId,
         threads: page.threads,
@@ -293,7 +293,7 @@ function QueryCard({ part }: { part: QueryToolPart }) {
   );
 }
 
-function MessageParts({ message }: { message: UIMessage }) {
+function MessageParts({ message, origin }: { message: UIMessage; origin: string }) {
   return (
     <>
       {message.parts.map((part, index) => {
@@ -301,7 +301,7 @@ function MessageParts({ message }: { message: UIMessage }) {
           if (message.role === "assistant") {
             return (
               <div key={index} className="message-markdown">
-                <Markdown remarkPlugins={[remarkGfm]}>{part.text}</Markdown>
+                <AssistantMarkdown origin={origin}>{part.text}</AssistantMarkdown>
               </div>
             );
           }
@@ -478,6 +478,7 @@ export default function Home() {
     defaultOrganizationId,
     environmentLabel,
     publicHostname,
+    origin,
     modelId,
     threadId,
     threads,
@@ -679,14 +680,14 @@ export default function Home() {
                 >
                   {message.role === "user" ? (
                     <Card size="2" className="user-bubble">
-                      <MessageParts message={message} />
+                      <MessageParts message={message} origin={origin} />
                     </Card>
                   ) : (
                     <Flex direction="column" gap="3">
                       <Text size="1" className="font-mono analyst-label">
                         ANALYST
                       </Text>
-                      <MessageParts message={message} />
+                      <MessageParts message={message} origin={origin} />
                     </Flex>
                   )}
                 </Flex>

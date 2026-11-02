@@ -15,6 +15,7 @@
     "cf-typegen": "wrangler types",
     "postinstall": "npm run cf-typegen",
     "lint": "oxlint app/ workers/ --ignore-pattern app/vendor/design-system",
+    "test": "node --test scripts/assistant-markdown.test.mjs",
     "format": "oxfmt --write app package.json postcss.config.mjs scripts/sync-design-system.mjs tsconfig.cloudflare.json '!app/vendor/design-system/**'",
     "format:check": "oxfmt --check app package.json postcss.config.mjs scripts/sync-design-system.mjs tsconfig.cloudflare.json '!app/vendor/design-system/**'",
     "db:migrate:local": "CI=1 wrangler d1 migrations apply workos-audit-chat-db --local",
