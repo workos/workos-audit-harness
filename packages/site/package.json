@@ -2,6 +2,9 @@
   "name": "@workos-inc/audit-harness-site",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "description": "Marketing and documentation site for the WorkOS Audit Harness.",
   "scripts": {
     "dev": "next dev --port 3030",
