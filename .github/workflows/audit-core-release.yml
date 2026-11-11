@@ -25,8 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '20'
-
+          node-version-file: .nvmrc
       - name: Configure Socket Firewall
         uses: workos/setup-socket-firewall@195977cfa38ab4d70363af5403a106dbc54a61eb
         with:
