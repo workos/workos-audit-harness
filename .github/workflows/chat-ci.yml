@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - "packages/chat/**"
+      - ".nvmrc"
       - ".github/workflows/chat-ci.yml"
   workflow_dispatch:
 

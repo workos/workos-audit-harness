@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'packages/audit-core/**'
+      - '.nvmrc'
       - '.github/workflows/audit-core-ci.yml'
   workflow_dispatch:
 
