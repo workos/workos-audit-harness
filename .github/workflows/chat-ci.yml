@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - "packages/chat/**"
+      - ".nvmrc"
       - ".github/workflows/chat-ci.yml"
   workflow_dispatch:
 
@@ -32,7 +33,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version-file: .nvmrc
           cache: "npm"
           cache-dependency-path: packages/chat/package-lock.json
 
